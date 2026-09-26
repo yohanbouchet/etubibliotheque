@@ -1,6 +1,7 @@
 package com.openclassrooms.etudiant.controller;
 
 import com.openclassrooms.etudiant.dto.LoginRequestDTO;
+import com.openclassrooms.etudiant.dto.LoginResponseDTO;
 import com.openclassrooms.etudiant.dto.RegisterDTO;
 import com.openclassrooms.etudiant.mapper.UserDtoMapper;
 import com.openclassrooms.etudiant.service.UserService;
@@ -28,9 +29,12 @@ public class UserController {
     }
 
     @PostMapping("/api/login")
-    public ResponseEntity<?> login(LoginRequestDTO loginRequestDTO) {
+    // Correction : @RequestBody remplit le DTO avec le JSON envoyé (sans lui, login et password arrivaient à null)
+    // et @Valid applique les règles @NotBlank du DTO avant d'appeler le service, comme pour register ci-dessus.
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequestDTO loginRequestDTO) {
         String jwtToken = userService.login(loginRequestDTO.getLogin(), loginRequestDTO.getPassword());
-        return ResponseEntity.ok(jwtToken);
+        // Le token est renvoyé dans un DTO, en JSON {"token": "..."}, et non en texte brut
+        return ResponseEntity.ok(new LoginResponseDTO(jwtToken));
     }
 
 

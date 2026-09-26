@@ -11,6 +11,15 @@ spring:
     password: ${DB_PASSWORD}
     url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}
 
+# Configuration des tokens JWT (utilisée par JwtService)
+jwt:
+  # Clé secrète de signature, encodée en Base64 (256 bits minimum pour HS256).
+  # En production, elle est fournie par la variable d'environnement JWT_SECRET.
+  # La valeur après ":" est une clé de DÉVELOPPEMENT uniquement (générée avec : openssl rand -base64 32).
+  secret: ${JWT_SECRET:9/MJQuO3D+1i8gl0Zo7T8kTv6rUUOQGJP5JJN+0OIIU=}
+  # Durée de validité d'un token en millisecondes (3600000 = 1 heure)
+  expiration: 3600000
+
 logging:
   level:
     org:

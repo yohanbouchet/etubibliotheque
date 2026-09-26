@@ -1,0 +1,16 @@
+{
+  // Configuration de lancement VS Code (équivalent d'une "Run Configuration" IntelliJ)
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Déboguer le back-end",
+      // VS Code démarre lui-même l'application, en mode débogage
+      "request": "launch",
+      // La classe qui contient la méthode main()
+      "mainClass": "com.openclassrooms.etudiant.EtudiantBackendApplication",
+      // Dossier de démarrage : là où se trouvent .env et compose.yaml
+      "cwd": "${workspaceFolder}/backend"
+    }
+  ]
+}

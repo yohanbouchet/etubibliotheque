@@ -5,7 +5,6 @@ import com.openclassrooms.etudiant.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -37,10 +36,13 @@ public class UserService {
         Assert.notNull(login, "Login must not be null");
         Assert.notNull(password, "Password must not be null");
         Optional<User> user = userRepository.findByLogin(login);
-        if (user.isPresent() && passwordEncoder.matches(password, password)) {
-            UserDetails userDetails = org.springframework.security.core.userdetails.User.builder()
-                    .username(login).build();
-            return jwtService.generateToken(userDetails);
+        // Correction : on compare le mot de passe saisi (en clair) avec le hash BCrypt stocké en base,
+        // et non le mot de passe saisi avec lui-même (matches renvoyait toujours false).
+        if (user.isPresent() && passwordEncoder.matches(password, user.get().getPassword())) {
+            // Correction : l'entité User implémente déjà UserDetails, on la transmet directement à JwtService.
+            // L'ancien code reconstruisait un UserDetails sans mot de passe : Spring le refusait
+            // ("Cannot pass null or empty values to constructor").
+            return jwtService.generateToken(user.get());
         } else {
             throw new IllegalArgumentException("Invalid credentials");
         }
