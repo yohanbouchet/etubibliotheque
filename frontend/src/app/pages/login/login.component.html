@@ -1,0 +1,44 @@
+<!-- Écran de connexion : même structure et mêmes classes Bootstrap que register.component.html -->
+<div class="card m-3">
+  <h5 class="card-header">Connexion</h5>
+  <div class="card-body">
+    <!-- [formGroup] relie ce formulaire à loginForm (défini dans le .ts) ;
+         (ngSubmit) appelle onSubmit() au clic sur le bouton -->
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="login">Login</label>
+        <!-- formControlName relie le champ au contrôle "login" du formulaire.
+             [ngClass] ajoute la classe rouge "is-invalid" si le champ est vide après un clic -->
+        <input id="login" type="text" formControlName="login" class="form-control"
+               [ngClass]="{ 'is-invalid': submitted && form['login'].errors }" />
+        @if (submitted && form['login'].errors?.['required']) {
+          <div class="invalid-feedback">Le login est obligatoire</div>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="password">Mot de passe</label>
+        <!-- type="password" masque la saisie (contrairement au formulaire register, qui utilise type="text") -->
+        <input id="password" type="password" formControlName="password" class="form-control"
+               [ngClass]="{ 'is-invalid': submitted && form['password'].errors }" />
+        @if (submitted && form['password'].errors?.['required']) {
+          <div class="invalid-feedback">Le mot de passe est obligatoire</div>
+        }
+      </div>
+
+      <!-- État "chargement" : [disabled] désactive le bouton pendant l'appel (évite les doubles clics) -->
+      <button class="btn btn-primary" type="submit" [disabled]="loading">
+        {{ loading ? 'Connexion en cours...' : 'Se connecter' }}
+      </button>
+    </form>
+
+    <!-- État "erreur" : message renvoyé par le serveur (ex. "Invalid credentials"), en rouge -->
+    @if (errorMessage) {
+      <div class="alert alert-danger mt-3">{{ errorMessage }}</div>
+    }
+    <!-- État "succès" : le token a été reçu et conservé dans sessionStorage, en vert -->
+    @if (success) {
+      <div class="alert alert-success mt-3">Connexion réussie</div>
+    }
+  </div>
+</div>
