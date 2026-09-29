@@ -11,6 +11,8 @@ Il est mis à jour à chaque étape du projet.
 | `37b470f` | Exercice 1, étape 3 – Écran de connexion (front-end) |
 | `798e979` | Exercice 1, étape 4 – API CRUD des étudiants sécurisée par JWT |
 | `f542318` | Exercice 1, étape 5 – Écrans CRUD des étudiants (front-end) |
+| `38c70ab` | Documentation : README, architecture, modifications |
+| *(ce commit)* | Exercice 2, étape 2 – Plan de tests |
 
 ---
 
@@ -135,7 +137,16 @@ Toutes ces routes exigent un en-tête `Authorization: Bearer <token>` (sinon 401
 
 ---
 
-## 7. Améliorations possibles (non réalisées)
+## 7. Exercice 2 – Tests
+
+| Étape | Réalisation |
+|---|---|
+| 1 – Analyse des tests fournis | Tests relus et exécutés (`./mvnw clean test` : 6/6, après réparation décrite au § 6). Constat : seule l'inscription est testée. |
+| 2 – Plan de tests | [plan-de-tests.md](plan-de-tests.md) : 10 tests unitaires back, 7 d'intégration back, 16 Jest, 9 parcours Cypress, du simple au complexe, avec entrées et sorties attendues. |
+
+**Choix** : l'énoncé demande de ne pas tester les cas d'erreur ; faute de précision du mentor, le plan se limite aux cas nominaux, avec deux exceptions justifiées (tests de sécurité « sans token → 401 » et tests fournis conservés). Des cas d'erreur ciblés ne seront ajoutés que si la couverture reste sous 80 %.
+
+## 8. Améliorations possibles (non réalisées)
 
 - Répondre **401** (et non 400) en cas de mauvais identifiants sur `/api/login`.
 - Afficher les erreurs serveur et masquer le mot de passe sur l'écran d'inscription.
