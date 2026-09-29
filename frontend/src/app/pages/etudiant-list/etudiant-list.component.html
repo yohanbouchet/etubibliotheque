@@ -1,0 +1,59 @@
+<!-- Écran liste des étudiants : mêmes classes Bootstrap que login et register -->
+<div class="card m-3">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <h5 class="mb-0">Étudiants</h5>
+    <div>
+      <!-- routerLink : lien Angular vers un autre écran (sans recharger la page) -->
+      <a class="btn btn-primary mr-2" routerLink="/etudiants/new">Ajouter un étudiant</a>
+      <button class="btn btn-secondary" type="button" (click)="logout()">Se déconnecter</button>
+    </div>
+  </div>
+
+  <div class="card-body">
+    <!-- État "chargement" -->
+    @if (loading) {
+      <p>Chargement...</p>
+    }
+    <!-- État "erreur" : message renvoyé par le serveur, en rouge -->
+    @if (errorMessage) {
+      <div class="alert alert-danger">{{ errorMessage }}</div>
+    }
+    <!-- Liste vide (chargement terminé, sans erreur) -->
+    @if (!loading && !errorMessage && etudiants.length === 0) {
+      <p>Aucun étudiant pour le moment.</p>
+    }
+
+    <!-- Tableau des étudiants (affiché seulement s'il y en a) -->
+    @if (etudiants.length > 0) {
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Prénom</th>
+            <th>Nom</th>
+            <th>E-mail</th>
+            <th>Formation</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- @for répète la ligne pour chaque étudiant ; track = identifiant unique de la ligne (l'id) -->
+          @for (etudiant of etudiants; track etudiant.id) {
+            <tr>
+              <td>{{ etudiant.firstName }}</td>
+              <td>{{ etudiant.lastName }}</td>
+              <td>{{ etudiant.email }}</td>
+              <td>{{ etudiant.training }}</td>
+              <td>
+                <!-- [routerLink]="['/etudiants', etudiant.id]" construit l'URL /etudiants/3 -->
+                <a class="btn btn-sm btn-info mr-1" [routerLink]="['/etudiants', etudiant.id]">Détail</a>
+                <a class="btn btn-sm btn-warning mr-1" [routerLink]="['/etudiants', etudiant.id, 'edit']">Modifier</a>
+                <!-- (click) appelle deleteEtudiant() avec l'étudiant de cette ligne (confirmation avant suppression) -->
+                <button class="btn btn-sm btn-danger" type="button" (click)="deleteEtudiant(etudiant)">Supprimer</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+</div>

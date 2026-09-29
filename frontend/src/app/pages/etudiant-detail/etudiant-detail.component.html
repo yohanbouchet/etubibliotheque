@@ -1,0 +1,36 @@
+<!-- Écran détail d'un étudiant : mêmes classes Bootstrap que les autres écrans -->
+<div class="card m-3">
+  <h5 class="card-header">Détail de l'étudiant</h5>
+  <div class="card-body">
+    <!-- État "chargement" -->
+    @if (loading) {
+      <p>Chargement...</p>
+    }
+    <!-- État "erreur" : ex. étudiant introuvable (404) -->
+    @if (errorMessage) {
+      <div class="alert alert-danger">{{ errorMessage }}</div>
+    }
+
+    <!-- Informations de l'étudiant, affichées une fois chargées -->
+    @if (etudiant) {
+      <!-- dl/dt/dd = liste "libellé : valeur" -->
+      <dl>
+        <dt>Prénom</dt>
+        <dd>{{ etudiant.firstName }}</dd>
+        <dt>Nom</dt>
+        <dd>{{ etudiant.lastName }}</dd>
+        <dt>E-mail</dt>
+        <dd>{{ etudiant.email }}</dd>
+        <dt>Date de naissance</dt>
+        <!-- | date:'dd/MM/yyyy' = "pipe" Angular qui met en forme la date : "2001-05-17" → 17/05/2001 -->
+        <dd>{{ etudiant.birthDate | date:'dd/MM/yyyy' }}</dd>
+        <dt>Formation</dt>
+        <dd>{{ etudiant.training }}</dd>
+      </dl>
+      <a class="btn btn-warning mr-2" [routerLink]="['/etudiants', etudiant.id, 'edit']">Modifier</a>
+    }
+
+    <!-- Toujours affiché, même en cas d'erreur -->
+    <a class="btn btn-secondary" routerLink="/etudiants">Retour à la liste</a>
+  </div>
+</div>

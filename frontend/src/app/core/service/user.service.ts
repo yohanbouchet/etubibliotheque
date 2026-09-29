@@ -27,4 +27,15 @@ export class UserService {
       tap(response => sessionStorage.setItem('token', response.token))
     );
   }
+
+  // Ajout (étape 5) : l'agent est-il connecté ? = y a-t-il un token dans sessionStorage ?
+  // !! transforme la valeur en vrai/faux (token présent → true ; null → false). Utilisé par authGuard.
+  isLoggedIn(): boolean {
+    return !!sessionStorage.getItem('token');
+  }
+
+  // Ajout (étape 5) : déconnexion = on efface le token ; les écrans protégés redeviennent inaccessibles
+  logout(): void {
+    sessionStorage.removeItem('token');
+  }
 }

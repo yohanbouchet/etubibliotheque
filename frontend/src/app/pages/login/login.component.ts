@@ -6,6 +6,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MaterialModule } from '../../shared/material.module';
 import { UserService } from '../../core/service/user.service';
 import { LoginRequest } from '../../core/models/LoginRequest';
+import { Router } from '@angular/router';
 
 // @Component déclare un écran Angular : son nom de balise (selector), son HTML et son CSS.
 // "imports" = les modules utilisés par le HTML (mêmes que register : formulaires réactifs, etc.)
@@ -21,6 +22,8 @@ export class LoginComponent implements OnInit {
   private userService = inject(UserService);
   private formBuilder = inject(FormBuilder);
   private destroyRef = inject(DestroyRef);
+  // Ajout (étape 5) : Router, pour aller sur la liste des étudiants après une connexion réussie
+  private router = inject(Router);
   loginForm: FormGroup = new FormGroup({});
   // Passe à true au premier clic : sert à n'afficher les erreurs de saisie qu'après une tentative
   submitted: boolean = false;
@@ -77,6 +80,8 @@ export class LoginComponent implements OnInit {
         next: () => {
           this.loading = false;
           this.success = true;
+          // Ajout (étape 5) : connecté → affichage de la liste des étudiants (écran protégé par authGuard)
+          this.router.navigate(['/etudiants']);
         },
         // Erreur : on affiche le message renvoyé par le back-end (ex. "Invalid credentials"),
         // ou un message générique si le serveur n'a pas répondu (back-end arrêté, etc.)

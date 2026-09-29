@@ -1,0 +1,62 @@
+<!-- Formulaire étudiant (ajout ou modification) : même structure que register et login -->
+<div class="card m-3">
+  <!-- Titre selon le mode (isEdit est défini dans le .ts) -->
+  <h5 class="card-header">{{ isEdit ? "Modifier l'étudiant" : 'Ajouter un étudiant' }}</h5>
+  <div class="card-body">
+    <form [formGroup]="etudiantForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="firstName">Prénom</label>
+        <input id="firstName" type="text" formControlName="firstName" class="form-control"
+               [ngClass]="{ 'is-invalid': submitted && form['firstName'].errors }" />
+        <div class="invalid-feedback">Le prénom est obligatoire</div>
+      </div>
+
+      <div class="form-group">
+        <label for="lastName">Nom</label>
+        <input id="lastName" type="text" formControlName="lastName" class="form-control"
+               [ngClass]="{ 'is-invalid': submitted && form['lastName'].errors }" />
+        <div class="invalid-feedback">Le nom est obligatoire</div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">E-mail</label>
+        <input id="email" type="email" formControlName="email" class="form-control"
+               [ngClass]="{ 'is-invalid': submitted && form['email'].errors }" />
+        <!-- Deux messages possibles selon la règle non respectée (Validators.required ou Validators.email) -->
+        @if (form['email'].errors?.['required']) {
+          <div class="invalid-feedback">L'e-mail est obligatoire</div>
+        }
+        @if (form['email'].errors?.['email']) {
+          <div class="invalid-feedback">Le format de l'e-mail est invalide</div>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="birthDate">Date de naissance</label>
+        <!-- type="date" : calendrier du navigateur ; la valeur est au format "AAAA-MM-JJ", celui attendu par le back-end.
+             [max]="today" : le calendrier ne propose pas de date future (le back-end vérifie aussi @Past) -->
+        <input id="birthDate" type="date" formControlName="birthDate" class="form-control" [max]="today"
+               [ngClass]="{ 'is-invalid': submitted && form['birthDate'].errors }" />
+        <div class="invalid-feedback">La date de naissance est obligatoire</div>
+      </div>
+
+      <div class="form-group">
+        <label for="training">Formation ou diplôme suivi</label>
+        <input id="training" type="text" formControlName="training" class="form-control"
+               [ngClass]="{ 'is-invalid': submitted && form['training'].errors }" />
+        <div class="invalid-feedback">La formation est obligatoire</div>
+      </div>
+
+      <!-- État "chargement" : bouton désactivé pendant l'appel au serveur -->
+      <button class="btn btn-primary mr-2" type="submit" [disabled]="loading">
+        {{ loading ? 'Enregistrement...' : 'Enregistrer' }}
+      </button>
+      <a class="btn btn-secondary" routerLink="/etudiants">Annuler</a>
+    </form>
+
+    <!-- État "erreur" : message du serveur (ex. "Student with email ... already exists"), en rouge -->
+    @if (errorMessage) {
+      <div class="alert alert-danger mt-3">{{ errorMessage }}</div>
+    }
+  </div>
+</div>
