@@ -29,6 +29,7 @@ etubibliotheque/
 
 - [Architecture](docs/architecture.md) : schémas de l'application et du parcours d'authentification JWT.
 - [Modifications apportées au code de départ](docs/modifications.md) : anomalies trouvées, corrections, nouvelles fonctionnalités et justification des choix.
+- [Plan de tests](docs/plan-de-tests.md) : cas de tests back, front et bout en bout, avec entrées et sorties attendues.
 
 ## Prérequis
 
@@ -64,7 +65,7 @@ Ouvrir http://localhost:4200 : la page de connexion s'affiche.
 
 | Commande | Dossier | Ce qui est testé |
 |---|---|---|
-| `./mvnw clean test` | `backend/` | Tests unitaires (Mockito) et d'intégration (MockMvc + MySQL dans Docker via Testcontainers). Docker doit être démarré. |
+| `./mvnw clean verify` | `backend/` | Tests unitaires (Mockito) et d'intégration (MockMvc + MySQL dans Docker via Testcontainers), rapport de couverture JaCoCo et contrôle du seuil de 80 %. Docker doit être démarré. |
 | `npm test` | `frontend/` | Tests Jest des composants et services Angular |
 | `npx newman run postman/EtuBibliotheque.postman_collection.json` | racine | Toutes les routes de l'API, back-end lancé (voir [postman/](postman/)) |
 

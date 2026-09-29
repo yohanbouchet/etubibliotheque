@@ -13,7 +13,8 @@ Il est mis à jour à chaque étape du projet.
 | `f542318` | Exercice 1, étape 5 – Écrans CRUD des étudiants (front-end) |
 | `38c70ab` | Documentation : README, architecture, modifications |
 | `ba8a4e2` | Exercice 2, étape 2 – Plan de tests |
-| *(à venir)* | Exercice 2, étape 3 – Tests back-end (JaCoCo, tests unitaires puis d'intégration) |
+| `ea20e82` | Exercice 2, étape 3 – JaCoCo et tests unitaires back-end |
+| *(ce commit)* | Exercice 2, étape 3 – Tests d'intégration back-end et seuil de couverture |
 
 ---
 
@@ -144,6 +145,15 @@ Toutes ces routes exigent un en-tête `Authorization: Bearer <token>` (sinon 401
 |---|---|
 | 1 – Analyse des tests fournis | Tests relus et exécutés (`./mvnw clean test` : 6/6, après réparation décrite au § 6). Constat : seule l'inscription est testée. |
 | 2 – Plan de tests | [plan-de-tests.md](plan-de-tests.md) : 10 tests unitaires back, 7 d'intégration back, 16 Jest, 9 parcours Cypress, du simple au complexe, avec entrées et sorties attendues. |
+| 3 – Tests back-end | 17 tests ajoutés (10 unitaires, 7 d'intégration), 23 au total. Couverture des lignes : **35,9 % → 86,7 %** (instructions : 84,6 %). JaCoCo génère le rapport et fait échouer le build sous 80 % (`./mvnw clean verify`). |
+
+**Choix pour les tests back-end**
+
+- **JaCoCo** mesure la couverture ; le code généré par Lombok en est exclu (`lombok.config`) pour ne mesurer que le code écrit à la main.
+- **Seuil de 80 % contrôlé automatiquement** (règle `check`) : le seuil devient une garantie vérifiée à chaque build, comme une « quality gate » de CI.
+- **Tests unitaires** avec `MockitoExtension` (plutôt que `SpringExtension`) ; le mapper MapStruct est utilisé réellement (`@Spy`) car il ne fait que recopier des champs.
+- **Tests d'intégration** : chaque test inscrit et connecte un agent via `/api/login` pour obtenir un vrai token ; le filtre JWT est donc testé en conditions réelles.
+- Les tests ajoutés aux fichiers fournis (`UserServiceTest`, `UserControllerTest`) respectent leur style ; le test de connexion protège la correction du bug `matches` contre une régression.
 
 **Choix** : l'énoncé demande de ne pas tester les cas d'erreur ; faute de précision du mentor, le plan se limite aux cas nominaux, avec deux exceptions justifiées (tests de sécurité « sans token → 401 » et tests fournis conservés). Des cas d'erreur ciblés ne seront ajoutés que si la couverture reste sous 80 %.
 

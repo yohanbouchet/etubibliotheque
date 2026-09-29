@@ -112,10 +112,31 @@ Une collection Postman de toutes ces routes est disponible dans [`../postman/`](
 Docker doit être démarré : les tests d'intégration créent une base MySQL temporaire (Testcontainers, image `mysql:8.4`).
 
 ```
-./mvnw clean test
+./mvnw clean verify
 ```
 
+Cette commande :
+ - exécute les tests unitaires (JUnit 5 + Mockito) et d'intégration (MockMvc + MySQL dans Docker) ;
+ - génère le **rapport de couverture JaCoCo** : `target/site/jacoco/index.html` ;
+ - **fait échouer le build si moins de 80 % des lignes sont couvertes** (règle `check` du plugin JaCoCo dans `pom.xml`).
+
+Le code généré par Lombok (getters, setters, constructeurs) est exclu du calcul (`lombok.config`).
+`./mvnw clean test` exécute seulement les tests, sans rapport ni contrôle du seuil.
+
 `clean` supprime les classes compilées au préalable : utile si VS Code (extension Java) a compilé le projet dans le même dossier `target/`.
+
+Pour n'afficher que le résultat : `./mvnw clean verify | grep -E "Tests run|coverage|BUILD"`.
+
+| Classe de test | Type | Tests |
+|---|---|---|
+| `JwtServiceTest` | Unitaire | génération, lecture et validation d'un token |
+| `EtudiantServiceTest` | Unitaire (Mockito) | liste, détail, création, modification, suppression |
+| `UserServiceTest` | Unitaire (Mockito) | inscription (fourni) et connexion |
+| `CustomUserDetailServiceTest` | Unitaire (Mockito) | recherche d'un agent par son login |
+| `UserControllerTest` | Intégration | `/api/register` (fourni) et `/api/login` |
+| `EtudiantControllerTest` | Intégration | les 5 routes `/api/etudiants` avec token, et l'accès sans token (401) |
+
+Le détail des cas testés figure dans le [plan de tests](../docs/plan-de-tests.md).
 
 ## Fonctionnalités portées
 
