@@ -1,14 +1,20 @@
 {
   "info": {
     "name": "EtuBibliothèque",
-    "description": "Requêtes de test de l'API EtuBibliothèque. Ordre conseillé : 1) Inscription d'un agent de démonstration, 2) Connexion, qui enregistre automatiquement le token JWT dans la variable {{token}}.",
+    "description": "Requêtes de test de l'API EtuBibliothèque, à lancer dans l'ordre (Run collection).\n1) Authentification : inscription d'un agent de démonstration, puis connexion (le token JWT est mémorisé dans {{token}}).\n2) Étudiants : vérification de la sécurité (sans token → 401), puis ajout, liste, détail, modification et suppression d'un étudiant.\nToutes les requêtes utilisent par défaut l'authentification 'Bearer {{token}}' définie au niveau de la collection.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
   },
   "variable": [
     { "key": "baseUrl", "value": "http://localhost:8080" },
     { "key": "login", "value": "agent.demo" },
     { "key": "password", "value": "Demo1234!" },
-    { "key": "token", "value": "" }
+    { "key": "token", "value": "" },
+    { "key": "etudiantId", "value": "" },
+    { "key": "etudiantEmail", "value": "" }
   ],
   "item": [
     {
@@ -31,6 +37,7 @@
             }
           ],
           "request": {
+            "auth": { "type": "noauth" },
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
@@ -68,6 +75,7 @@
             }
           ],
           "request": {
+            "auth": { "type": "noauth" },
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
@@ -79,6 +87,203 @@
               "raw": "{{baseUrl}}/api/login",
               "host": ["{{baseUrl}}"],
               "path": ["api", "login"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Étudiants",
+      "item": [
+        {
+          "name": "1 - Sécurité : liste SANS token (GET /api/etudiants)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Preuve de la sécurisation : sans en-tête Authorization, l'API refuse l'accès",
+                  "pm.test(\"Statut 401 Unauthorized sans token\", function () {",
+                  "    pm.response.to.have.status(401);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/etudiants",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "etudiants"]
+            }
+          }
+        },
+        {
+          "name": "2 - Ajouter un étudiant (POST /api/etudiants)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// E-mail unique à chaque exécution (l'e-mail doit être unique en base)",
+                  "pm.collectionVariables.set(\"etudiantEmail\", \"etudiant.\" + Date.now() + \"@test.fr\");"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 201 Created\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"L'étudiant créé a un id\", function () {",
+                  "    const body = pm.response.json();",
+                  "    pm.expect(body.id).to.be.a(\"number\");",
+                  "    // L'id est mémorisé pour les requêtes suivantes (détail, modification, suppression)",
+                  "    pm.collectionVariables.set(\"etudiantId\", body.id);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Marie\",\n  \"lastName\": \"Curie\",\n  \"email\": \"{{etudiantEmail}}\",\n  \"birthDate\": \"2001-05-17\",\n  \"training\": \"Master Physique\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/etudiants",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "etudiants"]
+            }
+          }
+        },
+        {
+          "name": "3 - Liste des étudiants (GET /api/etudiants)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"La liste contient l'étudiant créé\", function () {",
+                  "    const ids = pm.response.json().map(e => e.id);",
+                  "    pm.expect(ids).to.include(Number(pm.collectionVariables.get(\"etudiantId\")));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/etudiants",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "etudiants"]
+            }
+          }
+        },
+        {
+          "name": "4 - Détail d'un étudiant (GET /api/etudiants/{id})",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"C'est bien l'étudiant créé (même e-mail)\", function () {",
+                  "    pm.expect(pm.response.json().email).to.eql(pm.collectionVariables.get(\"etudiantEmail\"));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/etudiants/{{etudiantId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "etudiants", "{{etudiantId}}"]
+            }
+          }
+        },
+        {
+          "name": "5 - Modifier un étudiant (PUT /api/etudiants/{id})",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"La formation a été modifiée\", function () {",
+                  "    pm.expect(pm.response.json().training).to.eql(\"Doctorat Chimie\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Marie\",\n  \"lastName\": \"Curie\",\n  \"email\": \"{{etudiantEmail}}\",\n  \"birthDate\": \"2001-05-17\",\n  \"training\": \"Doctorat Chimie\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/etudiants/{{etudiantId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "etudiants", "{{etudiantId}}"]
+            }
+          }
+        },
+        {
+          "name": "6 - Supprimer un étudiant (DELETE /api/etudiants/{id})",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 204 No Content\", function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/etudiants/{{etudiantId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "etudiants", "{{etudiantId}}"]
             }
           }
         }

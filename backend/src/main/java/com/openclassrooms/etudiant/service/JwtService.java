@@ -33,6 +33,24 @@ public class JwtService {
                 .compact();                                       // assemblage en "en-tête.contenu.signature"
     }
 
+    // Ajout (étape 4) : lit le login (le "subject") contenu dans un token reçu.
+    // parseSignedClaims VÉRIFIE la signature avec la clé secrète et la date d'expiration :
+    // si le token a été modifié ou a expiré, une exception (JwtException) est levée.
+    public String extractUsername(String token) {
+        return Jwts.parser()
+                .verifyWith(getSigningKey())   // clé utilisée pour contrôler la signature
+                .build()
+                .parseSignedClaims(token)      // décode + vérifie (signature, expiration)
+                .getPayload()                  // le contenu : {"sub": ..., "iat": ..., "exp": ...}
+                .getSubject();                 // le login
+    }
+
+    // Ajout (étape 4) : le token est valide s'il appartient bien à cet utilisateur
+    // (la signature et l'expiration sont déjà contrôlées par extractUsername)
+    public boolean isTokenValid(String token, UserDetails userDetails) {
+        return extractUsername(token).equals(userDetails.getUsername());
+    }
+
     // Transforme la clé Base64 de la configuration en clé cryptographique de signature
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));

@@ -35,7 +35,9 @@ public class UserControllerTest {
 
 
     @Container
-    static MySQLContainer mySQLContainer = new MySQLContainer("mysql:latest");
+    // Version épinglée (8.4 = version LTS, support long terme) : "latest" pointe aujourd'hui vers MySQL 26.7,
+    // qui refuse le paramètre innodb_log_file_size ajouté par Testcontainers → le conteneur ne démarrait pas
+    static MySQLContainer mySQLContainer = new MySQLContainer("mysql:8.4");
 
     @Autowired
     private UserService userService;

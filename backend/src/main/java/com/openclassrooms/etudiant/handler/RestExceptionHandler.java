@@ -1,5 +1,6 @@
 package com.openclassrooms.etudiant.handler;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,6 +44,17 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
                 new HttpHeaders(), HttpStatus.FORBIDDEN, request);
     }
 
+
+    // Ajout (étape 4) : ressource introuvable (ex. GET /api/etudiants/999) → 404 Not Found,
+    // sur le même modèle que les gestionnaires ci-dessus (log + corps JSON ErrorDetails)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(value = {EntityNotFoundException.class})
+    protected ResponseEntity<Object> handleNotFoundException(EntityNotFoundException entityNotFoundException,
+                                                             WebRequest request) {
+        logError(entityNotFoundException);
+        return handleExceptionInternal(entityNotFoundException, getErrorDetails(entityNotFoundException, request),
+                new HttpHeaders(), HttpStatus.NOT_FOUND, request);
+    }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(value = {Exception.class})
