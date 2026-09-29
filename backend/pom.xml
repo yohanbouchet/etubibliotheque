@@ -34,6 +34,8 @@
 		<testcontainers.version>1.21.4</testcontainers.version>
 		<!-- Version de la bibliothèque jjwt (génération des tokens JWT) -->
 		<jjwt.version>0.13.0</jjwt.version>
+		<!-- Version de JaCoCo (mesure de la couverture de code par les tests) -->
+		<jacoco.version>0.8.15</jacoco.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -149,6 +151,29 @@
 						</path>
 					</annotationProcessorPaths>
 				</configuration>
+			</plugin>
+			<!-- JaCoCo : mesure quelles lignes du code sont exécutées par les tests (couverture) -->
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>${jacoco.version}</version>
+				<executions>
+					<!-- Avant les tests : branche l'"agent" JaCoCo sur la JVM des tests, qui enregistre les lignes exécutées -->
+					<execution>
+						<id>prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<!-- Après les tests (phase verify) : génère le rapport HTML dans target/site/jacoco/index.html -->
+					<execution>
+						<id>report</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>

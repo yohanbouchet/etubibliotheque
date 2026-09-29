@@ -12,7 +12,8 @@ Il est mis à jour à chaque étape du projet.
 | `798e979` | Exercice 1, étape 4 – API CRUD des étudiants sécurisée par JWT |
 | `f542318` | Exercice 1, étape 5 – Écrans CRUD des étudiants (front-end) |
 | `38c70ab` | Documentation : README, architecture, modifications |
-| *(ce commit)* | Exercice 2, étape 2 – Plan de tests |
+| `ba8a4e2` | Exercice 2, étape 2 – Plan de tests |
+| *(à venir)* | Exercice 2, étape 3 – Tests back-end (JaCoCo, tests unitaires puis d'intégration) |
 
 ---
 
