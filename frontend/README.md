@@ -1,59 +1,62 @@
 # EtudiantFrontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.16.
+Front-end Angular 19 d'EtuBibliothèque : inscription et connexion des agents, gestion des étudiants.
 
-## Development server
+## Démarrage
 
-To start a local development server, run:
-
-```bash
-ng serve
-```
-
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Le back-end doit être lancé (voir [`../backend/README.md`](../backend/README.md)).
 
 ```bash
-ng generate component component-name
+npm install      # première fois : installe les dépendances
+npm run start    # lance le serveur de développement (ng serve)
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Ouvrir http://localhost:4200.
+
+- Le serveur de développement transmet les appels `/api/...` au back-end (http://localhost:8080) grâce au proxy défini dans `proxy.conf.json` : le navigateur ne parle qu'au port 4200.
+- `ng serve` n'écoute que sur `127.0.0.1`. Pour y accéder depuis un autre poste : utiliser un tunnel SSH (redirection de port de VS Code Remote SSH, ou `ssh -L 4200:localhost:4200 <serveur>`), ou lancer `npm run start -- --host 0.0.0.0`.
+- `ng serve` est réservé au développement. En production : `npm run build`, puis servir le dossier `dist/` avec un serveur web (nginx, par exemple).
+
+## Écrans
+
+| URL | Écran | Accès |
+|---|---|---|
+| `/` | Redirige vers `/login` | public |
+| `/register` | Inscription d'un agent | public |
+| `/login` | Connexion (login / mot de passe) | public |
+| `/etudiants` | Liste des étudiants : détail, modification, suppression (avec confirmation), ajout, déconnexion | agent connecté |
+| `/etudiants/new` | Ajout d'un étudiant | agent connecté |
+| `/etudiants/:id` | Détail d'un étudiant | agent connecté |
+| `/etudiants/:id/edit` | Modification d'un étudiant | agent connecté |
+
+## Organisation du code (`src/app`)
+
+```
+core/
+├── models/        Interfaces TypeScript, miroirs des DTO du back-end (Register, LoginRequest, LoginResponse, Etudiant)
+├── service/       Services Angular qui appellent l'API (UserService, EtudiantService)
+├── interceptor/   authInterceptor : ajoute "Authorization: Bearer <token>" à chaque requête
+└── guard/         authGuard : écrans étudiants réservés aux agents connectés, sinon redirection vers /login
+pages/             Un dossier par écran (login, register, etudiant-list, etudiant-detail, etudiant-form)
+shared/            MaterialModule : modules Angular Material et formulaires réactifs
+app.routes.ts      Table de routage (URL → écran)
+app.config.ts      Configuration globale (HttpClient + intercepteur, Router)
+```
+
+**Authentification** : après une connexion réussie, le token JWT est conservé dans le `sessionStorage` du navigateur (effacé à la fermeture de l'onglet). Si le back-end répond 401 (token expiré après 1 heure), l'agent est déconnecté et renvoyé vers `/login`.
+
+## Tests unitaires (Jest)
 
 ```bash
-ng generate --help
+npm test             # exécute tous les tests (*.spec.ts)
+npm run test:watch   # relance les tests à chaque modification
 ```
 
-## Building
+Le rapport de couverture HTML est généré dans `coverage/` (configuration dans `jest.config.js`).
 
-To build the project run:
+## Génération de code (Angular CLI)
 
 ```bash
-ng build
+npx ng generate component pages/<nom>                  # nouvel écran
+npx ng generate guard core/guard/<nom> --functional    # nouveau guard
 ```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Jest](https://jestjs.io/) test runner, use the following command:
-
-```bash
-jest
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.

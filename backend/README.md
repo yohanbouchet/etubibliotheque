@@ -1,131 +1,130 @@
 # MS etudiant-backend
 
-Backend qui gère les APIs des utilisateurs de la bibliothèque et les CRUD des étudiants.
+Back-end qui gère les API des utilisateurs de la bibliothèque (agents) et le CRUD des étudiants.
 
-## Configuration du backend
+## Configuration du back-end
 
     - name: etudiant-backend
     - port: 8080
 
-## Pré-requis pour le bon fonctionnement du service :
+## Prérequis
 
     -> JDK 21
-    -> Docker
-    -> Docker Compose
-    -> Maven 3.9.3 (https://archive.apache.org/dist/maven/maven-3/3.9.3/binaries/) ou plus
+    -> Docker et Docker Compose (Docker Engine sous Linux, ou Docker Desktop)
+    -> Maven 3.9.3 ou plus : facultatif, le Maven Wrapper ./mvnw du projet télécharge la bonne version
 
-## Démarrage du backend
-Pour démarrer le projet backend, il faut : 
-- avoir démarré Docker-Desktop sur votre poste de travail local.
-- dans une console, se placer à la racine du projet et exécuter la commande Maven suivante :
+## Démarrage du back-end
+
+Docker doit être démarré. À la racine du dossier `backend/` :
+
 ```
-mvn spring-boot:run
-```
-
-Cette commande va : 
- - initialiser le container Docker qui contient la base de données 
- - lancer le serveur du backend et le connecter à la base de données précédemment créée
-
-Les traces logs devraient ressemblées à ceci : 
-```
-.   ____          _            __ _ _
-/\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
-( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
-\\/  ___)| |_)| | | | | || (_| |  ) ) ) )
-'  |____| .__|_| |_|_| |_\__, | / / / /
-=========|_|==============|___/=/_/_/_/
-
-:: Spring Boot ::                (v3.5.5)
-
-[etudiant-backend] [           main] c.o.etudiant.EtudiantBackendApplication  : Starting EtudiantBackendApplication using Java 21.0.3 with PID 6964
-[etudiant-backend] [           main] c.o.etudiant.EtudiantBackendApplication  : No active profile set, falling back to 1 default profile: "default"
-[etudiant-backend] [           main] .s.b.d.c.l.DockerComposeLifecycleManager : Using Docker Compose file ******etudiant-backend\compose.yaml*****
-[etudiant-backend] [utReader-stderr] o.s.boot.docker.compose.core.DockerCli   :  Container etudiant-backend-mysql-1  Created
-[etudiant-backend] [utReader-stderr] o.s.boot.docker.compose.core.DockerCli   :  Container etudiant-backend-mysql-1  Starting
-[etudiant-backend] [utReader-stderr] o.s.boot.docker.compose.core.DockerCli   :  Container etudiant-backend-mysql-1  Started
-[etudiant-backend] [utReader-stderr] o.s.boot.docker.compose.core.DockerCli   :  Container etudiant-backend-mysql-1  Waiting
-[etudiant-backend] [utReader-stderr] o.s.boot.docker.compose.core.DockerCli   :  Container etudiant-backend-mysql-1  Healthy
-[etudiant-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-[etudiant-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 39 ms. Found 1 JPA repository interface.
-[etudiant-backend] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
-[etudiant-backend] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-[etudiant-backend] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.44]
-[etudiant-backend] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
-[etudiant-backend] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1354 ms
-[etudiant-backend] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
-[etudiant-backend] [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.26.Final
-[etudiant-backend] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
-[etudiant-backend] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
-[etudiant-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
-[etudiant-backend] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@4db16677
-[etudiant-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
-[etudiant-backend] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
-[etudiant-backend] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
-[etudiant-backend] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
-[etudiant-backend] [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
-[etudiant-backend] [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
-[etudiant-backend] [           main] eAuthenticationProviderManagerConfigurer : Global AuthenticationManager configured with AuthenticationProvider bean with name authenticationProvider
-[etudiant-backend] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans w
-ill not be used by Spring Security for automatically configuring username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuth
-enticationProvider. If the current configuration is intentional, to turn off this warning, increase the logging level of 'org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer' to ERROR
-[etudiant-backend] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
-[etudiant-backend] [           main] c.o.etudiant.EtudiantBackendApplication  : Started EtudiantBackendApplication in 10.27 seconds (process running for 10.642)
+./mvnw spring-boot:run
 ```
 
-Sur Docker-Desktop, vous devriez voir apparaître un container MySQL qui correspond au projet.
+Cette commande va :
+ - démarrer le conteneur Docker de la base de données MySQL (décrit dans `compose.yaml`, identifiants dans `.env`) ;
+ - lancer le serveur du back-end et le connecter à la base ;
+ - créer ou mettre à jour les tables `user` et `etudiant` à partir des entités Java.
+
+`./mvnw` est le **Maven Wrapper** : il utilise la version de Maven fixée dans `.mvn/wrapper/maven-wrapper.properties`, identique sur tous les postes. La commande `mvn spring-boot:run` fonctionne aussi avec un Maven 3.9.3 ou plus installé sur le poste.
+
+Les traces de démarrage se terminent par :
+```
+o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+c.o.etudiant.EtudiantBackendApplication  : Started EtudiantBackendApplication in 7.518 seconds
+```
+
+### Variable d'environnement JWT_SECRET
+
+Les tokens JWT sont signés avec une clé secrète (256 bits minimum, encodée en Base64) lue dans la variable d'environnement `JWT_SECRET`.
+Sans cette variable, une **clé de développement** définie dans `application.yml` est utilisée : elle est publique (dépôt GitHub) et ne doit jamais servir en production.
+
+```
+export JWT_SECRET=$(openssl rand -base64 32)
+./mvnw spring-boot:run
+```
+
+### Débogage
+
+Dans VS Code, la configuration « Déboguer le back-end » (`.vscode/launch.json`, à la racine du dépôt) lance l'application en mode débogage depuis ce dossier.
+
+## Consulter la base de données
+
+**En ligne de commande** (le nom du conteneur s'affiche avec `docker ps`) :
+
+```
+docker exec -it backend-mysql-1 mysql -u etudiant_db -p etudiant_db
+```
+
+Le mot de passe est identique au nom d'utilisateur : `etudiant_db`. Puis, par exemple :
+
+```
+select * from user;
+select * from etudiant;
+```
+
+**Avec Docker Desktop** : un conteneur MySQL correspondant au projet apparaît.
 
 ![1-docker-desktop](pictures/1-docker-desktop.png)
 
-Vous pouvez vous connecter à la base de données et vérifier que la table ```user``` a été créée automatiquement.
-Pour cela, cliquez sur le lien `mysql-1` ce qui vous amènera sur la vue complète de la base de données. 
-Dans l'onglet ```Exec```, il faut : 
+Cliquez sur le lien `mysql-1`, puis, dans l'onglet `Exec` :
 
-1. se connecter à la base de données. Tapez la commande ci-dessous
+1. Connectez-vous à la base de données (mot de passe : `etudiant_db`) :
 
     ```
     mysql -u etudiant_db -p
     ```
-   L'invite de commande demandera le mot de passe. Il est identique au nom d'utilisateur, c'est-à-dire ```etudiant_db```.
 
-
-2. Se connecter au schéma de base de données `etudiant_db`. Dans l'invite de commande, tapez la commande ci-dessous :
+2. Sélectionnez le schéma `etudiant_db` :
 
     ```
     use etudiant_db;
     ```
-  
-3. Vérifier que la table `user` existe (elle est néanmoins vide pour le moment).
+
+3. Consultez une table :
 
     ```
     select * from user;
     ```
-    Le résultat devrait être : `Empty set (0.00 sec)`
-
-La capture d'écran ci-dessous résume les étapes précédentes : 
 
 ![2-docker-desktop-bdd](pictures/2-docker-desktop-bdd.png)
 
+## Routes de l'API
+
+| Méthode | URL | Accès | Corps envoyé | Réponse |
+|---|---|---|---|---|
+| POST | `/api/register` | public | `{firstName, lastName, login, password}` | 201 ; 400 si champ manquant ou login déjà utilisé |
+| POST | `/api/login` | public | `{login, password}` | 200 `{"token": "..."}` ; 400 si identifiants invalides |
+| GET | `/api/etudiants` | Bearer token | — | 200 : liste des étudiants |
+| GET | `/api/etudiants/{id}` | Bearer token | — | 200 ; 404 si introuvable |
+| POST | `/api/etudiants` | Bearer token | `{firstName, lastName, email, birthDate, training}` | 201 + étudiant créé ; 400 si invalide ou e-mail déjà utilisé |
+| PUT | `/api/etudiants/{id}` | Bearer token | idem POST | 200 + étudiant modifié ; 400 ; 404 |
+| DELETE | `/api/etudiants/{id}` | Bearer token | — | 204 ; 404 si introuvable |
+
+- « Bearer token » : en-tête `Authorization: Bearer <token>`, le token étant obtenu par `/api/login` (valable 1 heure). Sans token valide : **401**.
+- `birthDate` au format `AAAA-MM-JJ` (ex. `"2001-05-17"`), obligatoirement dans le passé ; `email` au format d'une adresse e-mail et unique.
+- Erreurs métier (login ou e-mail déjà utilisé, identifiants invalides, étudiant introuvable) : corps JSON `{timestamp, message, details}`. Erreurs de validation des champs (`@Valid`) : format standard de Spring (`ProblemDetail`), message dans le champ `detail`.
+
+Une collection Postman de toutes ces routes est disponible dans [`../postman/`](../postman/).
 
 ## Exécution des tests
-Pour exécuter les tests Junit, il faut :
-- avoir démarré Docker-Desktop sur votre poste de travail local. Cette étape est nécessaire car les tests d'intégration auront besoin de Docker pour créer des bases de données temporaires de test.
-- dans une console, se placer à la racine du projet et exécuter la commande Maven suivante :
+
+Docker doit être démarré : les tests d'intégration créent une base MySQL temporaire (Testcontainers, image `mysql:8.4`).
 
 ```
-mvn clean test
+./mvnw clean test
 ```
+
+`clean` supprime les classes compilées au préalable : utile si VS Code (extension Java) a compilé le projet dans le même dossier `target/`.
 
 ## Fonctionnalités portées
 
     - API de création d'un utilisateur (agent de la bibliothèque)
-    - API d'authentification d'un utilisateur (à faire)
-    - APIs CRUD des étudiants de la bibliothèque (à faire)
-
+    - API d'authentification d'un utilisateur, qui retourne un token JWT
+    - API CRUD des étudiants de la bibliothèque, sécurisées par token JWT
 
 ## Écrans ou blocs concernés
-    - Ecran xxx
-    - Ecran xxx
-    - Ecran xxx
 
-
-
+    - Écran d'inscription d'un agent (/register)
+    - Écran de connexion (/login)
+    - Écrans de gestion des étudiants : liste, détail, ajout, modification, suppression (/etudiants/...)
