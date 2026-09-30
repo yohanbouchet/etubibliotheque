@@ -16,6 +16,8 @@ Il est mis à jour à chaque étape du projet.
 | `ea20e82` | Exercice 2, étape 3 – JaCoCo et tests unitaires back-end |
 | `bca1222` | Exercice 2, étape 3 – Tests d'intégration back-end et seuil de couverture |
 | `a5af7ff` | Exercice 2, étape 4 – Tests front-end (Jest) |
+| `efe2520`, `d21eb19` | Exercice 2, étape 5 – Cypress et tests E2E |
+| *(ce commit)* | Exercice 2, étape 5 – Couverture de code des tests E2E |
 
 ---
 
@@ -150,6 +152,8 @@ Toutes ces routes exigent un en-tête `Authorization: Bearer <token>` (sinon 401
 
 | 4 – Tests front-end (Jest) | 19 tests ajoutés, 28 au total. Couverture des lignes : **58,9 % → 82,7 %** (instructions : 83,9 %). `npm test` échoue sous 80 %. |
 
+| 5 – Tests E2E (Cypress) | 9 parcours (inscription, connexion, sécurité, liste, détail, ajout, modification, suppression, déconnexion), API simulée avec `cy.intercept()`. Couverture de code E2E : **82,3 % des lignes, 83,4 % des instructions** ; `npm run e2e:coverage` échoue sous 80 %. |
+
 **Choix pour les tests back-end**
 
 - **JaCoCo** mesure la couverture ; le code généré par Lombok en est exclu (`lombok.config`) pour ne mesurer que le code écrit à la main.
@@ -165,6 +169,13 @@ Toutes ces routes exigent un en-tête `Authorization: Bearer <token>` (sinon 401
 - **Services** testés avec `HttpTestingController` (faux serveur : on vérifie la requête envoyée et on fournit la réponse) ; **composants** testés avec des doublures `jest.fn()` et en vérifiant le HTML affiché (lignes du tableau, messages).
 - **Écrans qui lisent l'URL** (détail, formulaire) testés avec `RouterTestingHarness`, qui ouvre une vraie adresse (`/etudiants/1`, `/etudiants/1/edit`).
 - **Test fourni corrigé** : `register.component.spec.ts` fournissait la classe `UserMockService` au lieu d'un objet. `user-mock.service.ts` est conservé, avec un commentaire expliquant pourquoi il n'est plus utilisé et ce qui le remplace.
+
+**Choix pour les tests E2E**
+
+- **API simulée** (`cy.intercept()`, demandé par l'énoncé) : les tests ne dépendent ni du back-end ni des données en base, et vérifient aussi le contenu des requêtes envoyées (corps, en-tête `Bearer`).
+- **Connexion par formulaire testée une seule fois** (E2E-02) ; les autres parcours rangent directement un token avant le chargement de la page (`onBeforeLoad`).
+- **Couverture de code** : Angular 19 compile avec esbuild, pour lequel il n'existe pas d'instrumentation fiable. Une configuration **séparée** utilise donc l'ancien compilateur webpack d'Angular (`@angular-builders/custom-webpack`) avec `coverage-istanbul-loader` ; l'application normale n'est pas modifiée. Toute l'application étant chargée par le navigateur (pas de chargement différé), tous les fichiers de `src/app` figurent dans le rapport.
+- **Xvfb** (écran virtuel) est nécessaire pour lancer le navigateur de Cypress sur un serveur Linux sans affichage.
 
 **Choix** : l'énoncé demande de ne pas tester les cas d'erreur ; faute de précision du mentor, le plan se limite aux cas nominaux, avec deux exceptions justifiées (tests de sécurité « sans token → 401 » et tests fournis conservés). Des cas d'erreur ciblés ne seront ajoutés que si la couverture reste sous 80 %.
 

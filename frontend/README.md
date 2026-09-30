@@ -70,6 +70,40 @@ npm run test:watch   # relance les tests à chaque modification
 
 Les appels HTTP sont simulés : `HttpTestingController` pour les services, doublures `jest.fn()` pour les composants. Le détail des cas figure dans le [plan de tests](../docs/plan-de-tests.md).
 
+## Tests de bout en bout (Cypress)
+
+Les tests E2E pilotent un vrai navigateur (Electron, sans affichage) sur l'application lancée. Les appels à l'API sont simulés avec `cy.intercept()` : **le back-end n'est pas nécessaire**.
+
+Prérequis sous Linux sans écran : `sudo apt install xvfb` (écran virtuel utilisé automatiquement par Cypress).
+
+```bash
+# Terminal 1 : l'application
+npm run start
+# Terminal 2 : les 9 tests E2E
+npm run e2e
+```
+
+| Fichier (`cypress/e2e/`) | Parcours testés |
+|---|---|
+| `01-inscription.cy.ts` | inscription d'un agent → redirection vers `/login` |
+| `02-connexion.cy.ts` | connexion → token en `sessionStorage`, en-tête `Bearer`, liste des étudiants |
+| `03-securite.cy.ts` | accès à `/etudiants` sans être connecté → `/login` |
+| `04-gestion-etudiants.cy.ts` | liste, détail, ajout, modification, suppression confirmée, déconnexion |
+
+### Couverture de code des tests E2E
+
+Pour mesurer les lignes exécutées pendant les tests E2E, une **version instrumentée** de l'application (compteurs insérés dans chaque fichier) est servie sur le port 4201. L'application normale (`npm run start`, `npm run build`) n'est pas modifiée.
+
+```bash
+# Terminal 1 : la version instrumentée (port 4201)
+npm run start:e2e
+# Terminal 2 : les tests E2E + rapport + contrôle du seuil de 80 %
+npm run e2e:coverage
+```
+
+- Rapport HTML : `coverage-e2e/index.html` ; la commande échoue si moins de 80 % des lignes ou des instructions sont couvertes (`.nycrc.json`).
+- Outils : `@angular-builders/custom-webpack` (cibles `build-e2e` / `serve-e2e` dans `angular.json`), `@jsdevtools/coverage-istanbul-loader` (instrumentation, `cypress/coverage.webpack.js`), `@cypress/code-coverage` (collecte des compteurs), `nyc` (rapport et seuil).
+
 ## Génération de code (Angular CLI)
 
 ```bash

@@ -45,3 +45,7 @@ Thumbs.db
 /cypress/screenshots
 /cypress/videos
 /cypress/downloads
+
+# Couverture de code des tests E2E (npm run e2e:coverage)
+/coverage-e2e
+/.nyc_output

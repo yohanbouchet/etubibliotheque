@@ -116,6 +116,6 @@ Les appels à l'API sont simulés avec `cy.intercept()` : les tests ne dépenden
 |---|---|---|
 | Back-end | JaCoCo (plugin Maven, à ajouter) | `./mvnw clean verify` → rapport HTML dans `backend/target/site/jacoco/` |
 | Front-end (Jest) | Couverture intégrée à Jest (déjà activée) | `npm test` → rapport HTML dans `frontend/coverage/` |
-| E2E (Cypress) | `@cypress/code-coverage` (code Angular instrumenté) | à définir à l'étape 5 |
+| E2E (Cypress) | `@cypress/code-coverage` (code Angular instrumenté) | `npm run e2e:coverage` → rapport HTML dans `frontend/coverage-e2e/` |
 
 Les classes sans logique (DTO et entités générés par Lombok, classe `main`) pourront être exclues du calcul de couverture, en le justifiant.

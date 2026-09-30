@@ -12,7 +12,7 @@ Le code de départ permettait uniquement d'inscrire un agent de bibliothèque. I
 | Back-end | Java 21, Spring Boot 3.5 (Web, Data JPA, Security, Validation), jjwt, MapStruct, Lombok |
 | Front-end | Angular 19, Angular Material, Bootstrap |
 | Base de données | MySQL dans un conteneur Docker |
-| Tests | JUnit 5, Mockito, Testcontainers, Jest, Postman / Newman (Cypress à venir) |
+| Tests | JUnit 5, Mockito, Testcontainers, JaCoCo, Jest, Cypress, Postman / Newman |
 
 ## Structure du dépôt
 
@@ -67,6 +67,8 @@ Ouvrir http://localhost:4200 : la page de connexion s'affiche.
 |---|---|---|
 | `./mvnw clean verify` | `backend/` | Tests unitaires (Mockito) et d'intégration (MockMvc + MySQL dans Docker via Testcontainers), rapport de couverture JaCoCo et contrôle du seuil de 80 %. Docker doit être démarré. |
 | `npm test` | `frontend/` | Tests Jest des services, du guard, de l'intercepteur et des composants Angular, rapport de couverture et contrôle du seuil de 80 % |
+| `npm run e2e` (avec `npm run start` lancé) | `frontend/` | 9 tests de bout en bout Cypress, API simulée (voir [frontend/README.md](frontend/README.md)) |
+| `npm run e2e:coverage` (avec `npm run start:e2e` lancé) | `frontend/` | Les mêmes tests E2E sur une version instrumentée : rapport de couverture et contrôle du seuil de 80 % |
 | `npx newman run postman/EtuBibliotheque.postman_collection.json` | racine | Toutes les routes de l'API, back-end lancé (voir [postman/](postman/)) |
 
 ## Sécurité
