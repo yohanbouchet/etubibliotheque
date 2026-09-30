@@ -66,7 +66,7 @@ Ouvrir http://localhost:4200 : la page de connexion s'affiche.
 | Commande | Dossier | Ce qui est testé |
 |---|---|---|
 | `./mvnw clean verify` | `backend/` | Tests unitaires (Mockito) et d'intégration (MockMvc + MySQL dans Docker via Testcontainers), rapport de couverture JaCoCo et contrôle du seuil de 80 %. Docker doit être démarré. |
-| `npm test` | `frontend/` | Tests Jest des composants et services Angular |
+| `npm test` | `frontend/` | Tests Jest des services, du guard, de l'intercepteur et des composants Angular, rapport de couverture et contrôle du seuil de 80 % |
 | `npx newman run postman/EtuBibliotheque.postman_collection.json` | racine | Toutes les routes de l'API, back-end lancé (voir [postman/](postman/)) |
 
 ## Sécurité

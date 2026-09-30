@@ -14,7 +14,8 @@ Il est mis à jour à chaque étape du projet.
 | `38c70ab` | Documentation : README, architecture, modifications |
 | `ba8a4e2` | Exercice 2, étape 2 – Plan de tests |
 | `ea20e82` | Exercice 2, étape 3 – JaCoCo et tests unitaires back-end |
-| *(ce commit)* | Exercice 2, étape 3 – Tests d'intégration back-end et seuil de couverture |
+| `bca1222` | Exercice 2, étape 3 – Tests d'intégration back-end et seuil de couverture |
+| *(ce commit)* | Exercice 2, étape 4 – Tests front-end (Jest) |
 
 ---
 
@@ -40,7 +41,7 @@ Il est mis à jour à chaque étape du projet.
 | `compose.yaml` | Image `mysql:latest` (version non épinglée) | ⏸ Non corrigée : la base de développement existante a été créée par MySQL 26.7, un retour en 8.4 imposerait de la recréer |
 | `User.java` | Champs `created_at` / `updated_at` qui ne respectent pas la convention Java (camelCase) | ⏸ Non corrigée (la nouvelle entité `Etudiant` utilise `createdAt` / `updatedAt`) |
 | `SpringSecurityConfig.java` | `new DaoAuthenticationProvider()` et `setUserDetailsService()` sont dépréciés dans Spring Security 6.5 | ⏸ Non corrigée (fonctionne encore) |
-| `register.component.spec.ts` | `useValue: UserMockService` fournit la classe au lieu d'une instance (`useClass` attendu) | ⏸ À traiter à l'exercice 2 (tests Jest) |
+| `register.component.spec.ts` | `useValue: UserMockService` fournit la classe au lieu d'une instance | ✅ Corrigée (exercice 2, étape 4) : doublure `jest.fn()` |
 
 ---
 
@@ -147,6 +148,8 @@ Toutes ces routes exigent un en-tête `Authorization: Bearer <token>` (sinon 401
 | 2 – Plan de tests | [plan-de-tests.md](plan-de-tests.md) : 10 tests unitaires back, 7 d'intégration back, 16 Jest, 9 parcours Cypress, du simple au complexe, avec entrées et sorties attendues. |
 | 3 – Tests back-end | 17 tests ajoutés (10 unitaires, 7 d'intégration), 23 au total. Couverture des lignes : **35,9 % → 86,7 %** (instructions : 84,6 %). JaCoCo génère le rapport et fait échouer le build sous 80 % (`./mvnw clean verify`). |
 
+| 4 – Tests front-end (Jest) | 19 tests ajoutés, 28 au total. Couverture des lignes : **58,9 % → 82,7 %** (instructions : 83,9 %). `npm test` échoue sous 80 %. |
+
 **Choix pour les tests back-end**
 
 - **JaCoCo** mesure la couverture ; le code généré par Lombok en est exclu (`lombok.config`) pour ne mesurer que le code écrit à la main.
@@ -154,6 +157,14 @@ Toutes ces routes exigent un en-tête `Authorization: Bearer <token>` (sinon 401
 - **Tests unitaires** avec `MockitoExtension` (plutôt que `SpringExtension`) ; le mapper MapStruct est utilisé réellement (`@Spy`) car il ne fait que recopier des champs.
 - **Tests d'intégration** : chaque test inscrit et connecte un agent via `/api/login` pour obtenir un vrai token ; le filtre JWT est donc testé en conditions réelles.
 - Les tests ajoutés aux fichiers fournis (`UserServiceTest`, `UserControllerTest`) respectent leur style ; le test de connexion protège la correction du bug `matches` contre une régression.
+
+**Choix pour les tests front-end**
+
+- **Mesure honnête** : `collectCoverageFrom` inclut tous les fichiers de `src/app`, même ceux qu'aucun test ne charge (sans ce réglage, l'intercepteur et les routes étaient absents du rapport, qui affichait 64,7 % au lieu de 58,9 %).
+- **Seuil de 80 %** contrôlé par Jest (`coverageThreshold`), comme la règle JaCoCo du back-end.
+- **Services** testés avec `HttpTestingController` (faux serveur : on vérifie la requête envoyée et on fournit la réponse) ; **composants** testés avec des doublures `jest.fn()` et en vérifiant le HTML affiché (lignes du tableau, messages).
+- **Écrans qui lisent l'URL** (détail, formulaire) testés avec `RouterTestingHarness`, qui ouvre une vraie adresse (`/etudiants/1`, `/etudiants/1/edit`).
+- **Test fourni corrigé** : `register.component.spec.ts` fournissait la classe `UserMockService` au lieu d'un objet. `user-mock.service.ts` est conservé, avec un commentaire expliquant pourquoi il n'est plus utilisé et ce qui le remplace.
 
 **Choix** : l'énoncé demande de ne pas tester les cas d'erreur ; faute de précision du mentor, le plan se limite aux cas nominaux, avec deux exceptions justifiées (tests de sécurité « sans token → 401 » et tests fournis conservés). Des cas d'erreur ciblés ne seront ajoutés que si la couverture reste sous 80 %.
 
