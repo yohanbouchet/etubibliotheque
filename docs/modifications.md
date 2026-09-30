@@ -15,7 +15,7 @@ Il est mis à jour à chaque étape du projet.
 | `ba8a4e2` | Exercice 2, étape 2 – Plan de tests |
 | `ea20e82` | Exercice 2, étape 3 – JaCoCo et tests unitaires back-end |
 | `bca1222` | Exercice 2, étape 3 – Tests d'intégration back-end et seuil de couverture |
-| *(ce commit)* | Exercice 2, étape 4 – Tests front-end (Jest) |
+| `a5af7ff` | Exercice 2, étape 4 – Tests front-end (Jest) |
 
 ---
 

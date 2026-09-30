@@ -40,3 +40,8 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# Cypress : captures d'écran et vidéos générées par les tests E2E
+/cypress/screenshots
+/cypress/videos
+/cypress/downloads

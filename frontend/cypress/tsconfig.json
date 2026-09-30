@@ -1,0 +1,13 @@
+{
+  // Configuration TypeScript propre aux tests Cypress : les types "cypress" (cy, expect de Cypress)
+  // ne doivent pas se mélanger avec ceux de Jest, utilisés par les tests unitaires dans src/
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM"],
+    "module": "ES2022",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "types": ["cypress", "node"]
+  },
+  "include": ["**/*.ts"]
+}
