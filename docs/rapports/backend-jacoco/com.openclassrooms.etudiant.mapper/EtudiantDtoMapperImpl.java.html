@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EtudiantDtoMapperImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">etudiant-backend</a> &gt; <a href="index.source.html" class="el_package">com.openclassrooms.etudiant.mapper</a> &gt; <span class="el_source">EtudiantDtoMapperImpl.java</span></div><h1>EtudiantDtoMapperImpl.java</h1><pre class="source lang-java linenums">package com.openclassrooms.etudiant.mapper;
+
+import com.openclassrooms.etudiant.dto.EtudiantDTO;
+import com.openclassrooms.etudiant.entities.Etudiant;
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.processing.Generated;
+import org.springframework.stereotype.Component;
+
+@Generated(
+    value = &quot;org.mapstruct.ap.MappingProcessor&quot;,
+    date = &quot;2026-10-01T17:36:03+0200&quot;,
+    comments = &quot;version: 1.6.3, compiler: javac, environment: Java 21.0.12.1 (Ubuntu)&quot;
+)
+@Component
+<span class="fc" id="L16">public class EtudiantDtoMapperImpl implements EtudiantDtoMapper {</span>
+
+    @Override
+    public Etudiant toEntity(EtudiantDTO etudiantDTO) {
+<span class="pc bpc" id="L20" title="1 of 2 branches missed.">        if ( etudiantDTO == null ) {</span>
+<span class="nc" id="L21">            return null;</span>
+        }
+
+<span class="fc" id="L24">        Etudiant etudiant = new Etudiant();</span>
+
+<span class="fc" id="L26">        etudiant.setFirstName( etudiantDTO.getFirstName() );</span>
+<span class="fc" id="L27">        etudiant.setLastName( etudiantDTO.getLastName() );</span>
+<span class="fc" id="L28">        etudiant.setEmail( etudiantDTO.getEmail() );</span>
+<span class="fc" id="L29">        etudiant.setBirthDate( etudiantDTO.getBirthDate() );</span>
+<span class="fc" id="L30">        etudiant.setTraining( etudiantDTO.getTraining() );</span>
+
+<span class="fc" id="L32">        return etudiant;</span>
+    }
+
+    @Override
+    public EtudiantDTO toDto(Etudiant etudiant) {
+<span class="pc bpc" id="L37" title="1 of 2 branches missed.">        if ( etudiant == null ) {</span>
+<span class="nc" id="L38">            return null;</span>
+        }
+
+<span class="fc" id="L41">        EtudiantDTO etudiantDTO = new EtudiantDTO();</span>
+
+<span class="fc" id="L43">        etudiantDTO.setId( etudiant.getId() );</span>
+<span class="fc" id="L44">        etudiantDTO.setFirstName( etudiant.getFirstName() );</span>
+<span class="fc" id="L45">        etudiantDTO.setLastName( etudiant.getLastName() );</span>
+<span class="fc" id="L46">        etudiantDTO.setEmail( etudiant.getEmail() );</span>
+<span class="fc" id="L47">        etudiantDTO.setBirthDate( etudiant.getBirthDate() );</span>
+<span class="fc" id="L48">        etudiantDTO.setTraining( etudiant.getTraining() );</span>
+
+<span class="fc" id="L50">        return etudiantDTO;</span>
+    }
+
+    @Override
+    public List&lt;EtudiantDTO&gt; toDtoList(List&lt;Etudiant&gt; etudiants) {
+<span class="pc bpc" id="L55" title="1 of 2 branches missed.">        if ( etudiants == null ) {</span>
+<span class="nc" id="L56">            return null;</span>
+        }
+
+<span class="fc" id="L59">        List&lt;EtudiantDTO&gt; list = new ArrayList&lt;EtudiantDTO&gt;( etudiants.size() );</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">        for ( Etudiant etudiant : etudiants ) {</span>
+<span class="fc" id="L61">            list.add( toDto( etudiant ) );</span>
+        }
+
+<span class="fc" id="L64">        return list;</span>
+    }
+
+    @Override
+    public void updateEntity(EtudiantDTO etudiantDTO, Etudiant etudiant) {
+<span class="pc bpc" id="L69" title="1 of 2 branches missed.">        if ( etudiantDTO == null ) {</span>
+<span class="nc" id="L70">            return;</span>
+        }
+
+<span class="fc" id="L73">        etudiant.setFirstName( etudiantDTO.getFirstName() );</span>
+<span class="fc" id="L74">        etudiant.setLastName( etudiantDTO.getLastName() );</span>
+<span class="fc" id="L75">        etudiant.setEmail( etudiantDTO.getEmail() );</span>
+<span class="fc" id="L76">        etudiant.setBirthDate( etudiantDTO.getBirthDate() );</span>
+<span class="fc" id="L77">        etudiant.setTraining( etudiantDTO.getTraining() );</span>
+<span class="fc" id="L78">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

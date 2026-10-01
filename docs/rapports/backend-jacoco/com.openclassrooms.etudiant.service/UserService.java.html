@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">etudiant-backend</a> &gt; <a href="index.source.html" class="el_package">com.openclassrooms.etudiant.service</a> &gt; <span class="el_source">UserService.java</span></div><h1>UserService.java</h1><pre class="source lang-java linenums">package com.openclassrooms.etudiant.service;
+
+import com.openclassrooms.etudiant.entities.User;
+import com.openclassrooms.etudiant.repository.UserRepository;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
+
+import java.util.Optional;
+
+<span class="fc" id="L14">@Slf4j</span>
+@Service
+@Transactional
+@RequiredArgsConstructor
+public class UserService {
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+
+    public void register(User user) {
+<span class="fc" id="L24">        Assert.notNull(user, &quot;User must not be null&quot;);</span>
+<span class="fc" id="L25">        log.info(&quot;Registering new user&quot;);</span>
+
+<span class="fc" id="L27">        Optional&lt;User&gt; optionalUser = userRepository.findByLogin(user.getLogin());</span>
+<span class="fc bfc" id="L28" title="All 2 branches covered.">        if (optionalUser.isPresent()) {</span>
+<span class="fc" id="L29">            throw new IllegalArgumentException(&quot;User with login &quot; + user.getLogin() + &quot; already exists&quot;);</span>
+        }
+<span class="fc" id="L31">        user.setPassword(passwordEncoder.encode(user.getPassword()));</span>
+<span class="fc" id="L32">        userRepository.save(user);</span>
+<span class="fc" id="L33">    }</span>
+
+    public String login(String login, String password) {
+<span class="fc" id="L36">        Assert.notNull(login, &quot;Login must not be null&quot;);</span>
+<span class="fc" id="L37">        Assert.notNull(password, &quot;Password must not be null&quot;);</span>
+<span class="fc" id="L38">        Optional&lt;User&gt; user = userRepository.findByLogin(login);</span>
+        // Correction : on compare le mot de passe saisi (en clair) avec le hash BCrypt stocké en base,
+        // et non le mot de passe saisi avec lui-même (matches renvoyait toujours false).
+<span class="pc bpc" id="L41" title="2 of 4 branches missed.">        if (user.isPresent() &amp;&amp; passwordEncoder.matches(password, user.get().getPassword())) {</span>
+            // Correction : l'entité User implémente déjà UserDetails, on la transmet directement à JwtService.
+            // L'ancien code reconstruisait un UserDetails sans mot de passe : Spring le refusait
+            // (&quot;Cannot pass null or empty values to constructor&quot;).
+<span class="fc" id="L45">            return jwtService.generateToken(user.get());</span>
+        } else {
+<span class="nc" id="L47">            throw new IllegalArgumentException(&quot;Invalid credentials&quot;);</span>
+        }
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

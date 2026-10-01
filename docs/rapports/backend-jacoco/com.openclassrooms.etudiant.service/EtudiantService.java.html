@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EtudiantService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">etudiant-backend</a> &gt; <a href="index.source.html" class="el_package">com.openclassrooms.etudiant.service</a> &gt; <span class="el_source">EtudiantService.java</span></div><h1>EtudiantService.java</h1><pre class="source lang-java linenums">package com.openclassrooms.etudiant.service;
+
+import com.openclassrooms.etudiant.dto.EtudiantDTO;
+import com.openclassrooms.etudiant.entities.Etudiant;
+import com.openclassrooms.etudiant.mapper.EtudiantDtoMapper;
+import com.openclassrooms.etudiant.repository.EtudiantRepository;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
+
+import java.util.List;
+
+// Service = la couche des traitements (règles métier), entre le controller et le repository.
+// Même modèle que UserService : @Transactional (tout ou rien en base), @RequiredArgsConstructor (Lombok
+// génère le constructeur qui reçoit le repository et le mapper, injectés par Spring), @Slf4j (logs).
+// Le service reçoit et renvoie des DTO : la conversion avec l'entité se fait ici, grâce au mapper.
+<span class="fc" id="L20">@Slf4j</span>
+@Service
+@Transactional
+@RequiredArgsConstructor
+public class EtudiantService {
+    private final EtudiantRepository etudiantRepository;
+    private final EtudiantDtoMapper etudiantDtoMapper;
+
+    // Ajouter un étudiant : refus si l'e-mail est déjà utilisé (400, comme le login en double dans register)
+    public EtudiantDTO create(EtudiantDTO etudiantDTO) {
+<span class="fc" id="L30">        Assert.notNull(etudiantDTO, &quot;Student must not be null&quot;);</span>
+<span class="fc" id="L31">        log.info(&quot;Creating new student&quot;);</span>
+<span class="pc bpc" id="L32" title="1 of 2 branches missed.">        if (etudiantRepository.existsByEmail(etudiantDTO.getEmail())) {</span>
+<span class="nc" id="L33">            throw new IllegalArgumentException(&quot;Student with email &quot; + etudiantDTO.getEmail() + &quot; already exists&quot;);</span>
+        }
+        // DTO → entité, enregistrement (INSERT), puis entité enregistrée (avec son id) → DTO
+<span class="fc" id="L36">        Etudiant saved = etudiantRepository.save(etudiantDtoMapper.toEntity(etudiantDTO));</span>
+<span class="fc" id="L37">        return etudiantDtoMapper.toDto(saved);</span>
+    }
+
+    // Consulter la liste des étudiants
+    public List&lt;EtudiantDTO&gt; findAll() {
+<span class="fc" id="L42">        return etudiantDtoMapper.toDtoList(etudiantRepository.findAll());</span>
+    }
+
+    // Consulter le détail d'un étudiant (404 s'il n'existe pas)
+    public EtudiantDTO findById(Long id) {
+<span class="fc" id="L47">        return etudiantDtoMapper.toDto(getEtudiantOrThrow(id));</span>
+    }
+
+    // Modifier un étudiant : 404 s'il n'existe pas ; 400 si son nouvel e-mail appartient à un AUTRE étudiant
+    public EtudiantDTO update(Long id, EtudiantDTO etudiantDTO) {
+<span class="fc" id="L52">        Assert.notNull(etudiantDTO, &quot;Student must not be null&quot;);</span>
+<span class="fc" id="L53">        Etudiant etudiant = getEtudiantOrThrow(id);</span>
+<span class="pc bpc" id="L54" title="1 of 2 branches missed.">        if (etudiantRepository.existsByEmailAndIdNot(etudiantDTO.getEmail(), id)) {</span>
+<span class="nc" id="L55">            throw new IllegalArgumentException(&quot;Student with email &quot; + etudiantDTO.getEmail() + &quot; already exists&quot;);</span>
+        }
+        // Recopie les nouvelles valeurs dans l'étudiant existant, puis enregistre (UPDATE)
+<span class="fc" id="L58">        etudiantDtoMapper.updateEntity(etudiantDTO, etudiant);</span>
+<span class="fc" id="L59">        return etudiantDtoMapper.toDto(etudiantRepository.save(etudiant));</span>
+    }
+
+    // Supprimer un étudiant (404 s'il n'existe pas)
+    public void delete(Long id) {
+<span class="fc" id="L64">        etudiantRepository.delete(getEtudiantOrThrow(id));</span>
+<span class="fc" id="L65">    }</span>
+
+    // Méthode interne réutilisée par findById, update et delete :
+    // findById renvoie un Optional (&quot;une boîte peut-être vide&quot;) ; orElseThrow lève l'exception si elle est vide.
+    // EntityNotFoundException est transformée en réponse 404 par RestExceptionHandler.
+    private Etudiant getEtudiantOrThrow(Long id) {
+<span class="fc" id="L71">        return etudiantRepository.findById(id)</span>
+<span class="pc" id="L72">                .orElseThrow(() -&gt; new EntityNotFoundException(&quot;Student with id &quot; + id + &quot; not found&quot;));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

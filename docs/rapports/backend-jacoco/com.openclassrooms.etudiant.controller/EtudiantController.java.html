@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EtudiantController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">etudiant-backend</a> &gt; <a href="index.source.html" class="el_package">com.openclassrooms.etudiant.controller</a> &gt; <span class="el_source">EtudiantController.java</span></div><h1>EtudiantController.java</h1><pre class="source lang-java linenums">package com.openclassrooms.etudiant.controller;
+
+import com.openclassrooms.etudiant.dto.EtudiantDTO;
+import com.openclassrooms.etudiant.service.EtudiantService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
+// Controller = la couche des entrées/sorties HTTP : il reçoit la requête, appelle le service, renvoie la réponse.
+// Il ne contient aucune règle métier et ne manipule que des DTO (jamais l'entité Etudiant).
+// @RequestMapping(&quot;/api/etudiants&quot;) : préfixe commun à toutes les routes de cette classe.
+// Ces routes ne sont PAS dans les permitAll de SpringSecurityConfig : elles exigent d'être authentifié.
+@RestController
+@RequestMapping(&quot;/api/etudiants&quot;)
+@RequiredArgsConstructor
+public class EtudiantController {
+
+    private final EtudiantService etudiantService;
+
+    // POST /api/etudiants : ajouter un étudiant → 201 Created + l'étudiant créé (avec son id)
+    // @Valid @RequestBody : le JSON remplit le DTO, puis ses règles (@NotBlank, @Email, @Past...) sont vérifiées
+    @PostMapping
+    public ResponseEntity&lt;EtudiantDTO&gt; create(@Valid @RequestBody EtudiantDTO etudiantDTO) {
+<span class="fc" id="L35">        return new ResponseEntity&lt;&gt;(etudiantService.create(etudiantDTO), HttpStatus.CREATED);</span>
+    }
+
+    // GET /api/etudiants : consulter la liste des étudiants → 200 OK
+    @GetMapping
+    public ResponseEntity&lt;List&lt;EtudiantDTO&gt;&gt; findAll() {
+<span class="fc" id="L41">        return ResponseEntity.ok(etudiantService.findAll());</span>
+    }
+
+    // GET /api/etudiants/{id} : consulter le détail d'un étudiant → 200 OK (404 s'il n'existe pas)
+    // @PathVariable(&quot;id&quot;) : récupère le {id} de l'URL (ex. /api/etudiants/3 → id = 3)
+    @GetMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;EtudiantDTO&gt; findById(@PathVariable(&quot;id&quot;) Long id) {
+<span class="fc" id="L48">        return ResponseEntity.ok(etudiantService.findById(id));</span>
+    }
+
+    // PUT /api/etudiants/{id} : modifier un étudiant → 200 OK + l'étudiant modifié
+    @PutMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;EtudiantDTO&gt; update(@PathVariable(&quot;id&quot;) Long id,
+                                              @Valid @RequestBody EtudiantDTO etudiantDTO) {
+<span class="fc" id="L55">        return ResponseEntity.ok(etudiantService.update(id, etudiantDTO));</span>
+    }
+
+    // DELETE /api/etudiants/{id} : supprimer un étudiant → 204 No Content (succès, sans corps de réponse)
+    @DeleteMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;Void&gt; delete(@PathVariable(&quot;id&quot;) Long id) {
+<span class="fc" id="L61">        etudiantService.delete(id);</span>
+<span class="fc" id="L62">        return ResponseEntity.noContent().build();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>
