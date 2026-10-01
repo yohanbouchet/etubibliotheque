@@ -18,7 +18,7 @@ Il est mis à jour à chaque étape du projet.
 | `a5af7ff` | Exercice 2, étape 4 – Tests front-end (Jest) |
 | `efe2520`, `d21eb19` | Exercice 2, étape 5 – Cypress et tests E2E |
 | `ca355e4` | Exercice 2, étape 5 – Couverture de code des tests E2E |
-| *(ce commit)* | Rapports de tests et de couverture versionnés dans `docs/rapports/` (livrable) |
+| `b7521e7` | Rapports de tests et de couverture versionnés dans `docs/rapports/` (livrable) |
 
 ---
 
