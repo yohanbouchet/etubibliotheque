@@ -19,6 +19,7 @@ Il est mis à jour à chaque étape du projet.
 | `efe2520`, `d21eb19` | Exercice 2, étape 5 – Cypress et tests E2E |
 | `ca355e4` | Exercice 2, étape 5 – Couverture de code des tests E2E |
 | `b7521e7` | Rapports de tests et de couverture versionnés dans `docs/rapports/` (livrable) |
+| `84a04f9` | Après le livrable – Écran d'inscription : affichage des erreurs serveur et test Jest (UF-17) |
 
 ---
 
@@ -36,7 +37,7 @@ Il est mis à jour à chaque étape du projet.
 | `register.component.ts` | `// TODO : router l'utilisateur vers la page de login` | ✅ Traité (étape 3) |
 | `pom.xml`, `UserControllerTest.java` | Les tests d'intégration fournis ne démarraient plus (voir § 6) | ✅ Corrigée (étape 4) |
 | `backend/README.md` | Commandes `mvn` (Maven du poste) au lieu du Maven Wrapper `./mvnw` du projet | ✅ Mis à jour |
-| `register.component.ts` / `.html` | Erreurs serveur non affichées (login déjà existant → rien à l'écran) ; mot de passe saisi en `type="text"` (visible) | ⏸ Non corrigée : hors périmètre de l'énoncé |
+| `register.component.ts` / `.html` | Erreurs serveur non affichées (login déjà existant → rien à l'écran) ; mot de passe saisi en `type="text"` (visible) | ✅ Erreurs serveur : corrigée après le livrable (§ 8) ; ⏸ mot de passe visible : non corrigé |
 | `UserService.login` | Mauvais identifiants → `IllegalArgumentException` → **400**, alors que **401** serait le code approprié (un gestionnaire `BadCredentialsException` → 401 existe déjà dans `RestExceptionHandler`) | ⏸ Non corrigée : décision de rester dans le périmètre de l'énoncé |
 | `RestExceptionHandler.java` | Import de `java.nio.file.AccessDeniedException` (exception liée aux fichiers) au lieu de celle de Spring Security : le gestionnaire 403 n'est jamais déclenché | ⏸ Non corrigée |
 | `RestExceptionHandler.java` | Le gestionnaire de `Exception.class` attend un paramètre `RuntimeException` : une exception « vérifiée » ne serait pas traitée par ce gestionnaire | ⏸ Non corrigée |
@@ -178,12 +179,28 @@ Toutes ces routes exigent un en-tête `Authorization: Bearer <token>` (sinon 401
 - **Couverture de code** : Angular 19 compile avec esbuild, pour lequel il n'existe pas d'instrumentation fiable. Une configuration **séparée** utilise donc l'ancien compilateur webpack d'Angular (`@angular-builders/custom-webpack`) avec `coverage-istanbul-loader` ; l'application normale n'est pas modifiée. Toute l'application étant chargée par le navigateur (pas de chargement différé), tous les fichiers de `src/app` figurent dans le rapport.
 - **Xvfb** (écran virtuel) est nécessaire pour lancer le navigateur de Cypress sur un serveur Linux sans affichage.
 
-**Choix** : l'énoncé demande de ne pas tester les cas d'erreur ; faute de précision du mentor, le plan se limite aux cas nominaux, avec deux exceptions justifiées (tests de sécurité « sans token → 401 » et tests fournis conservés). Des cas d'erreur ciblés ne seront ajoutés que si la couverture reste sous 80 %.
+**Choix** : l'énoncé demande de ne pas tester les cas d'erreur ; faute de précision du mentor, le plan se limite aux cas nominaux, avec deux exceptions justifiées (tests de sécurité « sans token → 401 » et tests fournis conservés), puis une troisième ajoutée après le livrable (UF-17, § 8). Des cas d'erreur ciblés ne seront ajoutés que si la couverture reste sous 80 %.
 
-## 8. Améliorations possibles (non réalisées)
+## 8. Après le livrable – Erreurs serveur sur l'écran d'inscription
+
+**Constat** (relevé au § 1) : en s'inscrivant avec un login déjà utilisé, le back-end répond **400** avec le message « User with login … already exists », mais l'écran n'affiche rien. L'énoncé demande pourtant, à l'étape 3 de l'exercice 1 : « Assurez-vous que les erreurs serveur s'affichent ».
+
+| Fichier | Modification |
+|---|---|
+| `register.component.ts` | `subscribe(() => …)` devient `subscribe({ next, error })` : en cas d'erreur, le message renvoyé par le back-end est rangé dans `errorMessage` (message générique si le serveur ne répond pas). `errorMessage` est remis à `null` à chaque nouvelle tentative. |
+| `register.component.html` | Bloc `@if (errorMessage)` affiché en alerte rouge, comme sur l'écran de connexion |
+| `register.component.spec.ts` | Test **UF-17** : la doublure de `UserService` répond une `HttpErrorResponse` 400 (`throwError`) ; on vérifie le message dans le composant et à l'écran, et l'absence de redirection |
+
+**Choix**
+
+- **Même mécanisme que l'écran de connexion** (§ 3) : comportement cohérent entre les deux formulaires.
+- **Test d'un cas d'erreur**, par exception au périmètre « cas nominaux » : il vérifie une exigence explicite de l'énoncé.
+- **Résultats** : Jest **29 tests**, couverture des lignes **82,7 % → 83,3 %** ; Cypress 9 tests toujours réussis, couverture E2E des lignes **85,1 %** (rapports de `docs/rapports/` régénérés).
+
+## 9. Améliorations possibles (non réalisées)
 
 - Répondre **401** (et non 400) en cas de mauvais identifiants sur `/api/login`.
-- Afficher les erreurs serveur et masquer le mot de passe sur l'écran d'inscription.
+- Masquer le mot de passe (`type="password"`) sur l'écran d'inscription.
 - Corriger l'import `AccessDeniedException` et la signature du gestionnaire `Exception.class` dans `RestExceptionHandler`.
 - Restreindre les endpoints Actuator en production.
 - Épingler la version de MySQL dans `compose.yaml` (nécessite de recréer la base de développement).

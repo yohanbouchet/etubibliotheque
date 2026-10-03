@@ -30,7 +30,7 @@ etubibliotheque/
 - [Architecture](docs/architecture.md) : schémas de l'application et du parcours d'authentification JWT.
 - [Modifications apportées au code de départ](docs/modifications.md) : anomalies trouvées, corrections, nouvelles fonctionnalités et justification des choix.
 - [Plan de tests](docs/plan-de-tests.md) : cas de tests back, front et bout en bout, avec entrées et sorties attendues.
-- [Rapports de tests et de couverture](docs/rapports/README.md) : synthèse (back 86,7 %, front 82,7 %, E2E 82,3 % des lignes) et rapports HTML.
+- [Rapports de tests et de couverture](docs/rapports/README.md) : synthèse (back 86,7 %, front 83,3 %, E2E 85,1 % des lignes) et rapports HTML.
 
 ## Prérequis
 

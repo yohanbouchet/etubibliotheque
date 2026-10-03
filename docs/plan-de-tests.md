@@ -31,10 +31,11 @@ Ce document répond à l'étape 2 de l'exercice « Effectuez des tests unitaires
 
 **Pyramide des tests** : beaucoup de tests unitaires (rapides, ciblés), moins de tests d'intégration (toute la chaîne, plus lents), quelques tests E2E (parcours utilisateur complets dans un navigateur).
 
-**Périmètre** : conformément à l'énoncé (« Ne testez pas les cas d'erreur », « Ne vérifiez pas les effets de bord »), le plan couvre les **cas nominaux** (tout se passe bien). Deux exceptions justifiées :
+**Périmètre** : conformément à l'énoncé (« Ne testez pas les cas d'erreur », « Ne vérifiez pas les effets de bord »), le plan couvre les **cas nominaux** (tout se passe bien). Trois exceptions justifiées :
 
 - **Sécurité** : l'accès sans token (API → 401, écrans → redirection vers `/login`) prouve la sécurisation demandée par l'exercice 1.
 - **Tests fournis** : ils sont conservés tels quels (ils contiennent des cas d'erreur).
+- **Affichage des erreurs serveur à l'inscription** (UF-17, ajouté après le livrable) : il vérifie une exigence explicite de l'exercice 1 (« Assurez-vous que les erreurs serveur s'affichent »).
 
 Si un rapport de couverture reste sous 80 % avec les seuls cas nominaux, des cas d'erreur ciblés seront ajoutés et signalés comme tels.
 
@@ -93,6 +94,7 @@ Les appels HTTP sont simulés avec `HttpTestingController` (services) ou des ser
 | UF-14 | 2 | `EtudiantDetailComponent` | URL `/etudiants/1`, le service renvoie l'étudiant | ses informations affichées |
 | UF-15 | 3 | `EtudiantFormComponent` (ajout) | formulaire rempli, sans id dans l'URL | appel de `create`, navigation vers `/etudiants` |
 | UF-16 | 3 | `EtudiantFormComponent` (modification) | URL `/etudiants/1/edit` | formulaire pré-rempli ; à l'envoi, appel de `update(1, ...)` puis navigation |
+| UF-17 | 2 | `RegisterComponent` (erreur serveur) | formulaire rempli ; le service répond une erreur 400 `{message}` (login déjà utilisé) | message affiché à l'écran, aucune redirection |
 
 ## 6. Bout en bout (Cypress)
 
