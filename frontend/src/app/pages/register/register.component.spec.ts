@@ -1,11 +1,14 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
-import { of } from 'rxjs';
+// of(...) = Observable qui répond "succès" ; throwError(...) = Observable qui répond "erreur" (cas error du subscribe)
+import { of, throwError } from 'rxjs';
+// HttpErrorResponse = l'objet que reçoit le composant quand le back-end répond une erreur HTTP (400, 401…)
+import { HttpErrorResponse } from '@angular/common/http';
 
 import { RegisterComponent } from './register.component';
 import { UserService } from '../../core/service/user.service';
 
-// Tests du composant d'inscription (plan de tests : UF-10).
+// Tests du composant d'inscription (plan de tests : UF-10 et UF-17).
 // Correction du test fourni : il utilisait { provide: UserService, useValue: UserMockService },
 // c'est-à-dire la CLASSE UserMockService au lieu d'un objet ; la doublure n'était donc jamais utilisable.
 describe('RegisterComponent', () => {
@@ -60,5 +63,30 @@ describe('RegisterComponent', () => {
     expect(userServiceMock.register).toHaveBeenCalledWith(agent);
     expect(window.alert).toHaveBeenCalled();
     expect(router.navigate).toHaveBeenCalledWith(['/login']);
+  });
+
+  // UF-17 (ajout, exercice d'entraînement) : inscription refusée par le back (login déjà utilisé)
+  // → message d'erreur affiché, pas de redirection
+  it('displays the server error message when registration fails', () => {
+    // GIVEN : le back répondra une erreur 400 (une seule fois)
+    // mockReturnValueOnce : la doublure renvoie cette erreur pour UN seul appel ;
+    // les autres tests gardent la réponse "succès" programmée plus haut (of({}))
+    // HttpErrorResponse est construite comme celle du vrai back : le texte est dans error.message
+    userServiceMock.register.mockReturnValueOnce(
+      throwError(() => new HttpErrorResponse({ status: 400, error: { message: "login déjà utilisé" } }))
+    );
+    component.registerForm.setValue({ firstName: 'Agent', lastName: 'Demo', login: 'agent.demo', password: 'Demo1234!' });
+
+    // WHEN
+    component.onSubmit();
+    fixture.detectChanges(); // met à jour l'affichage après la réponse
+
+    // THEN : la variable du composant contient le message du back…
+    expect(component.errorMessage).toBe("login déjà utilisé");
+    // … le message est visible à l'écran (bloc @if (errorMessage) du HTML)…
+    expect(fixture.nativeElement.textContent).toContain("login déjà utilisé");
+    // … et l'agent n'est PAS redirigé : not.toHaveBeenCalled() = navigate n'a été appelé nulle part
+    // (plus strict que not.toHaveBeenCalledWith(['/login']), qui n'exclut que /login)
+    expect(router.navigate).not.toHaveBeenCalled();
   });
 });

@@ -77,4 +77,8 @@
       </div>
     </form>
   </div>
+  <!-- Ajout (exercice d'entraînement) : erreur serveur (ex. login déjà utilisé), affichée seulement si errorMessage est rempli -->
+  @if (errorMessage) {
+    <div class="alert alert-danger mt-3">{{ errorMessage }}</div>
+  }
 </div>

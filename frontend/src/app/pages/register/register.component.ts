@@ -6,6 +6,7 @@ import { UserService } from '../../core/service/user.service';
 import { Register } from '../../core/models/Register';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-register',
@@ -22,6 +23,9 @@ export class RegisterComponent implements OnInit {
   private router = inject(Router);
   registerForm: FormGroup = new FormGroup({});
   submitted: boolean = false;
+  // Ajout (exercice d'entraînement) : message d'erreur renvoyé par le back-end, affiché en rouge dans le template.
+  // null = pas d'erreur → le bloc @if (errorMessage) du HTML reste masqué
+  errorMessage: string | null = null;
 
   ngOnInit() {
     this.registerForm = this.formBuilder.group(
@@ -40,6 +44,8 @@ export class RegisterComponent implements OnInit {
 
   onSubmit(): void {
     this.submitted = true;
+    // Chaque nouvelle tentative repart d'un écran propre : on efface l'erreur de la tentative précédente
+    this.errorMessage = null;
     if (this.registerForm.invalid) {
       return;
     }
@@ -51,13 +57,22 @@ export class RegisterComponent implements OnInit {
     };
     this.userService.register(registerUser)
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(
-      () => {
-        alert('SUCCESS!! :-)');
-        // TODO traité : après une inscription réussie, le Router affiche l'écran de connexion (/login)
-        this.router.navigate(['/login']);
-      },
-    );
+      // subscribe({ next, error }) : avant, seul le succès était traité ; une erreur du back-end
+      // (ex. login déjà utilisé → 400) n'était écoutée par personne et rien ne s'affichait
+      .subscribe({
+        // Succès (201) : alerte puis redirection vers l'écran de connexion
+        next: () => {
+          alert('SUCCESS!! :-)');
+          // TODO traité : après une inscription réussie, le Router affiche l'écran de connexion (/login)
+          this.router.navigate(['/login']);
+        },
+        // Erreur : on affiche le message renvoyé par le back-end (ex. "User with login agent.demo already exists"),
+        // ou un message générique si le serveur n'a pas répondu (back-end arrêté, etc.)
+        // ?. = "si ça existe" ; ?? = "sinon, prendre la valeur de droite"
+        error: (error: HttpErrorResponse) => {
+          this.errorMessage = error.error?.message ?? 'Connexion impossible : le serveur ne répond pas.';
+        }
+      });
   }
 
   onReset(): void {
