@@ -73,7 +73,7 @@ describe('RegisterComponent', () => {
     // les autres tests gardent la réponse "succès" programmée plus haut (of({}))
     // HttpErrorResponse est construite comme celle du vrai back : le texte est dans error.message
     userServiceMock.register.mockReturnValueOnce(
-      throwError(() => new HttpErrorResponse({ status: 400, error: { message: "login déjà utilisé" } }))
+      throwError(() => new HttpErrorResponse({ status: 400, error: { message: 'login déjà utilisé' } }))
     );
     component.registerForm.setValue({ firstName: 'Agent', lastName: 'Demo', login: 'agent.demo', password: 'Demo1234!' });
 
@@ -82,9 +82,9 @@ describe('RegisterComponent', () => {
     fixture.detectChanges(); // met à jour l'affichage après la réponse
 
     // THEN : la variable du composant contient le message du back…
-    expect(component.errorMessage).toBe("login déjà utilisé");
+    expect(component.errorMessage).toBe('login déjà utilisé');
     // … le message est visible à l'écran (bloc @if (errorMessage) du HTML)…
-    expect(fixture.nativeElement.textContent).toContain("login déjà utilisé");
+    expect(fixture.nativeElement.textContent).toContain('login déjà utilisé');
     // … et l'agent n'est PAS redirigé : not.toHaveBeenCalled() = navigate n'a été appelé nulle part
     // (plus strict que not.toHaveBeenCalledWith(['/login']), qui n'exclut que /login)
     expect(router.navigate).not.toHaveBeenCalled();
